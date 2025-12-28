@@ -3,7 +3,7 @@
 	"name": "Recycle Bin",
 	"version": "1.0.0",
 	"minAppVersion": "1.0.0",
-	"description": "A visual recycle bin for your vault. Preview, restore, or permanently delete trashed files with ease.",
+	"description": "A visual recycle bin (trash/rubbish bin) for your vault. Preview, restore, or permanently delete trashed files. Supports 8 languages.",
 	"author": "wronginput",
 	"authorUrl": "https://github.com/wronginput",
 	"isDesktopOnly": false,
