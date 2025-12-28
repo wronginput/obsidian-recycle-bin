@@ -1,0 +1,88 @@
+# Recycle Bin for Obsidian
+
+A visual recycle bin for your Obsidian vault. Preview, restore, or permanently delete trashed files with ease.
+
+![Obsidian Plugin](https://img.shields.io/badge/Obsidian-Plugin-purple)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+
+> 🆕 **This is a brand new plugin!** Suggestions, feedback, and contributions are very welcome. Please open an issue or PR on GitHub.
+
+## Features
+
+- **🗑️ Visual Trash Browser** - See all deleted files in a clean sidebar view
+- **👁️ Preview Before Restore** - View file contents in a full editor tab without restoring
+- **↩️ Easy Restore** - One-click restore to original location
+- **🔍 Search & Sort** - Find files by name, sort by date/size/name
+- **⏰ Auto-Purge** - Automatically delete old files after X days
+- **📊 Metadata Display** - See file size and deletion date
+- **⚙️ Configurable** - Settings for confirmations, metadata display, and more
+
+## ⚠️ Important: Trash Location Setting
+
+**This plugin ONLY works when Obsidian is set to use its own `.trash` folder.**
+
+If you're using System Trash (macOS Bin / Windows Recycle Bin), deleted files go to your OS and this plugin cannot access them.
+
+**To enable this plugin:**
+1. Go to **Settings → Recycle Bin** (this plugin's settings)
+2. Change "Deleted files location" to **"Obsidian .trash folder"**
+
+The plugin settings will be greyed out until this is configured correctly.
+
+## Installation
+
+### From Obsidian Community Plugins (Coming Soon)
+1. Open Settings → Community Plugins
+2. Search for "Recycle Bin"
+3. Click Install, then Enable
+
+### Manual Installation
+1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/wronginput/obsidian-recycle-bin/releases)
+2. Create folder: `<vault>/.obsidian/plugins/recycle-bin/`
+3. Copy the files into the folder
+4. Reload Obsidian
+5. Enable the plugin in Settings → Community Plugins
+
+## Usage
+
+1. Click the 🗑️ icon in the left ribbon to open the recycle bin
+2. Click any file to preview its contents in a full editor tab
+3. Use the ↩ button to restore files
+4. Use the search bar to find specific files
+5. Sort by name, date, or size using the dropdown
+
+## Settings
+
+| Setting | Description |
+|---------|-------------|
+| **Deleted files location** | Must be set to "Obsidian .trash folder" for plugin to work |
+| **Auto-purge** | Automatically delete files older than X days |
+| **Confirmations** | Show confirmation dialogs before delete/empty |
+| **Show Metadata** | Display file size and deletion date |
+| **Show delete button** | Show per-item delete button (hidden by default) |
+
+## Requirements
+
+- Obsidian v1.0.0 or higher
+- **Trash setting MUST be set to "Move to Obsidian trash (.trash folder)"**
+
+## Contributing
+
+This is a new plugin and contributions are welcome! Feel free to:
+- 🐛 Report bugs via GitHub Issues
+- 💡 Suggest features
+- 🔧 Submit pull requests
+
+## Acknowledgements
+
+This plugin was inspired by [Trash Explorer](https://github.com/proog/obsidian-trash-explorer) by **Per Mortensen**. Thank you for the original concept and inspiration!
+
+This is a from-scratch rewrite with additional features including full-tab file preview, auto-purge, inline trash location settings, and enhanced UI.
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## Author
+
+Created by [wronginput](https://github.com/wronginput)

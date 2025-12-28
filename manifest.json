@@ -1,0 +1,11 @@
+{
+	"id": "recycle-bin",
+	"name": "Recycle Bin",
+	"version": "1.0.0",
+	"minAppVersion": "1.0.0",
+	"description": "A visual recycle bin for your vault. Preview, restore, or permanently delete trashed files with ease.",
+	"author": "wronginput",
+	"authorUrl": "https://github.com/wronginput",
+	"isDesktopOnly": false,
+	"fundingUrl": ""
+}
