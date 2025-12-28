@@ -1874,9 +1874,22 @@ class RecycleBinSettingTab extends obsidian.PluginSettingTab {
                 .addOption('none', t('permanentDelete'))
                 .setValue(currentTrashOption)
                 .onChange(async (value) => {
-                    // Update Obsidian's vault config
+                    // Update Obsidian's vault config and save it properly
                     this.app.vault.config.trashOption = value;
-                    await this.app.vault.setConfig('trashOption', value);
+
+                    // Try multiple methods to persist the setting
+                    try {
+                        // Method 1: Use setConfig (standard API)
+                        await this.app.vault.setConfig('trashOption', value);
+
+                        // Method 2: Write the config file directly as a backup
+                        const configPath = this.app.vault.configDir + '/app.json';
+                        const configContent = JSON.stringify(this.app.vault.config, null, 2);
+                        await this.app.vault.adapter.write(configPath, configContent);
+                    } catch (e) {
+                        console.error('Failed to save trash config:', e);
+                    }
+
                     new obsidian.Notice(t('trashLocationChanged') + ': ' + (value === 'local' ? 'Obsidian .trash' : value === 'system' ? 'System' : 'Permanent'));
                     this.display(); // Refresh to update explanation
                 }));
