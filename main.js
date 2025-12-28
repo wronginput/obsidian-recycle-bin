@@ -1237,7 +1237,7 @@ class FilePreviewView extends obsidian.ItemView {
     }
 
     getDisplayText() {
-        return this.file ? `🗑️ ${this.file.name}` : 'Trashed File Preview';
+        return this.file ? `🗑️ ${this.file.name}` : t('trashedFilePreview');
     }
 
     getIcon() {
@@ -1280,18 +1280,18 @@ class FilePreviewView extends obsidian.ItemView {
         banner.innerHTML = `
             <div class="recycle-bin-preview-banner-icon">🗑️</div>
             <div class="recycle-bin-preview-banner-text">
-                <strong>This file is in the Recycle Bin</strong><br>
-                <span>Original: ${this.file.originalPath} • ${formatFileSize(this.file.size)} • Deleted ${formatDate(this.file.mtime)}</span>
+                <strong>${t('fileInBin')}</strong><br>
+                <span>${t('originalLocation')}: ${this.file.originalPath} • ${formatFileSize(this.file.size)} • ${t('deleted')} ${formatDate(this.file.mtime)}</span>
             </div>
         `;
 
         // Action buttons in banner
         const actions = banner.createDiv({ cls: 'recycle-bin-preview-banner-actions' });
 
-        const restoreBtn = actions.createEl('button', { text: '↩ Restore', cls: 'recycle-bin-btn restore' });
+        const restoreBtn = actions.createEl('button', { text: '↩ ' + t('restore'), cls: 'recycle-bin-btn restore' });
         restoreBtn.onclick = async () => {
             if (await this.file.restore()) {
-                new obsidian.Notice(`Restored "${this.file.name}"`);
+                new obsidian.Notice(t('restored', { name: this.file.name }));
                 // Open the restored file
                 const restoredFile = this.app.vault.getAbstractFileByPath(this.file.originalPath);
                 if (restoredFile) {
@@ -1302,21 +1302,21 @@ class FilePreviewView extends obsidian.ItemView {
                 // Refresh recycle bin views
                 await this.plugin.refreshViews();
             } else {
-                new obsidian.Notice(`Cannot restore: file already exists at original location`, 5000);
+                new obsidian.Notice(t('cannotRestore'), 5000);
             }
         };
 
-        const deleteBtn = actions.createEl('button', { text: '✕ Delete Forever', cls: 'recycle-bin-btn danger' });
+        const deleteBtn = actions.createEl('button', { text: '✕ ' + t('deleteForever'), cls: 'recycle-bin-btn danger' });
         deleteBtn.onclick = async () => {
             if (this.plugin.settings.showConfirmations) {
                 new ConfirmModal(
                     this.app,
-                    'Delete permanently',
-                    `Are you sure you want to permanently delete "${this.file.name}"? This cannot be undone.`,
-                    'Delete',
+                    t('deletePermanently'),
+                    t('deleteConfirmMessage', { name: this.file.name }),
+                    t('delete'),
                     async () => {
                         await this.file.delete();
-                        new obsidian.Notice(`Deleted "${this.file.name}"`);
+                        new obsidian.Notice(t('deleted', { name: this.file.name }));
                         this.leaf.detach();
                         await this.plugin.refreshViews();
                     }
@@ -1458,7 +1458,7 @@ class RecycleBinView extends obsidian.ItemView {
     }
 
     getDisplayText() {
-        return 'Recycle Bin';
+        return t('recycleBin');
     }
 
     getIcon() {
@@ -1623,13 +1623,13 @@ class RecycleBinView extends obsidian.ItemView {
 
         if (trashOption !== 'local') {
             // Show warning that plugin won't work with current setting
-            empty.createEl('p', { text: 'Recycle Bin is not configured' });
+            empty.createEl('p', { text: t('binNotConfigured') });
             const warning = empty.createEl('small');
             warning.style.color = 'var(--text-warning)';
-            warning.innerHTML = '⚠️ You\'re using System Trash.<br>Go to <strong>Settings → Recycle Bin</strong> to enable.';
+            warning.innerHTML = t('usingSystemTrash') + '<br>' + t('goToSettings');
         } else {
-            empty.createEl('p', { text: 'Your recycle bin is empty' });
-            empty.createEl('small', { text: 'Deleted files will appear here' });
+            empty.createEl('p', { text: t('binEmpty') });
+            empty.createEl('small', { text: t('deletedFilesAppear') });
         }
     }
 
@@ -1830,12 +1830,12 @@ class RecycleBinSettingTab extends obsidian.PluginSettingTab {
         const { containerEl } = this;
         containerEl.empty();
 
-        containerEl.createEl('h2', { text: 'Recycle Bin Settings' });
+        containerEl.createEl('h2', { text: t('recycleBinSettings') });
 
         // =============================================
         // TRASH LOCATION SECTION
         // =============================================
-        containerEl.createEl('h3', { text: '📍 Trash Location' });
+        containerEl.createEl('h3', { text: t('trashLocation') });
 
         // Get current Obsidian trash setting
         const currentTrashOption = this.app.vault.config.trashOption || 'system';
@@ -1849,35 +1849,35 @@ class RecycleBinSettingTab extends obsidian.PluginSettingTab {
 
         if (currentTrashOption === 'local') {
             trashExplanation.innerHTML = `
-                <strong style="color: var(--text-success);">✓ Using Obsidian's .trash folder</strong><br>
-                <span style="color: var(--text-muted);">Deleted files will appear in this Recycle Bin.</span>
+                <strong style="color: var(--text-success);">${t('usingObsidianTrash')}</strong><br>
+                <span style="color: var(--text-muted);">${t('deletedFilesWillAppear')}</span>
             `;
         } else if (currentTrashOption === 'system') {
             trashExplanation.innerHTML = `
-                <strong style="color: var(--text-warning);">⚠ Using System Trash (macOS Bin)</strong><br>
-                <span style="color: var(--text-muted);">Deleted files go to your OS trash, not this Recycle Bin. Change below to use this plugin.</span>
+                <strong style="color: var(--text-warning);">${t('usingSystemTrashWarning')}</strong><br>
+                <span style="color: var(--text-muted);">${t('systemTrashWarningDesc')}</span>
             `;
         } else {
             trashExplanation.innerHTML = `
-                <strong style="color: var(--text-error);">⚠ Permanent Deletion Enabled</strong><br>
-                <span style="color: var(--text-muted);">Deleted files are immediately destroyed! Change below to enable recovery.</span>
+                <strong style="color: var(--text-error);">${t('permanentDeleteWarning')}</strong><br>
+                <span style="color: var(--text-muted);">${t('permanentDeleteWarningDesc')}</span>
             `;
         }
 
         // Dropdown to change trash location
         new obsidian.Setting(containerEl)
-            .setName('Deleted files location')
-            .setDesc('Choose where deleted files should go. "Obsidian .trash" is required for this plugin to work.')
+            .setName(t('deletedFilesLocation'))
+            .setDesc(t('deletedFilesLocationDesc'))
             .addDropdown(dropdown => dropdown
-                .addOption('local', '📁 Obsidian .trash folder (recommended)')
-                .addOption('system', '🗑️ System trash (macOS Bin)')
-                .addOption('none', '⚠️ Permanently delete (no recovery)')
+                .addOption('local', t('obsidianTrashFolder'))
+                .addOption('system', t('systemTrash'))
+                .addOption('none', t('permanentDelete'))
                 .setValue(currentTrashOption)
                 .onChange(async (value) => {
                     // Update Obsidian's vault config
                     this.app.vault.config.trashOption = value;
                     await this.app.vault.setConfig('trashOption', value);
-                    new obsidian.Notice(`Trash location changed to: ${value === 'local' ? 'Obsidian .trash' : value === 'system' ? 'System trash' : 'Permanent delete'}`);
+                    new obsidian.Notice(t('trashLocationChanged') + ': ' + (value === 'local' ? 'Obsidian .trash' : value === 'system' ? 'System' : 'Permanent'));
                     this.display(); // Refresh to update explanation
                 }));
 
@@ -1886,7 +1886,7 @@ class RecycleBinSettingTab extends obsidian.PluginSettingTab {
         // =============================================
         // PLUGIN SETTINGS SECTION  
         // =============================================
-        const settingsHeader = containerEl.createEl('h3', { text: '⚙️ Plugin Settings' });
+        const settingsHeader = containerEl.createEl('h3', { text: t('pluginSettings') });
 
         // Check if plugin is usable
         const isPluginEnabled = currentTrashOption === 'local';
@@ -1900,8 +1900,8 @@ class RecycleBinSettingTab extends obsidian.PluginSettingTab {
             disabledNotice.style.borderRadius = '6px';
             disabledNotice.style.color = 'var(--text-on-accent)';
             disabledNotice.innerHTML = `
-                <strong>⚠️ Settings disabled</strong><br>
-                Change "Deleted files location" above to "Obsidian .trash folder" to enable this plugin.
+                <strong>${t('settingsDisabled')}</strong><br>
+                ${t('settingsDisabledDesc')}
             `;
         }
 
@@ -1914,8 +1914,8 @@ class RecycleBinSettingTab extends obsidian.PluginSettingTab {
 
         // Auto-purge toggle
         new obsidian.Setting(settingsContainer)
-            .setName('Auto-purge old files')
-            .setDesc('Automatically delete files older than a specified number of days')
+            .setName(t('autoPurge'))
+            .setDesc(t('autoPurgeDesc'))
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.autoPurgeEnabled)
                 .setDisabled(!isPluginEnabled)
@@ -1928,8 +1928,8 @@ class RecycleBinSettingTab extends obsidian.PluginSettingTab {
         // Auto-purge days (only show if enabled)
         if (this.plugin.settings.autoPurgeEnabled) {
             new obsidian.Setting(settingsContainer)
-                .setName('Auto-purge after (days)')
-                .setDesc('Delete files older than this many days')
+                .setName(t('autoPurgeDays'))
+                .setDesc(t('autoPurgeDaysDesc'))
                 .addText(text => text
                     .setPlaceholder('90')
                     .setValue(String(this.plugin.settings.autoPurgeDays))
@@ -1945,8 +1945,8 @@ class RecycleBinSettingTab extends obsidian.PluginSettingTab {
 
         // Show confirmations
         new obsidian.Setting(settingsContainer)
-            .setName('Show confirmation dialogs')
-            .setDesc('Ask for confirmation before deleting or emptying trash')
+            .setName(t('showConfirmations'))
+            .setDesc(t('showConfirmationsDesc'))
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.showConfirmations)
                 .setDisabled(!isPluginEnabled)
@@ -1957,8 +1957,8 @@ class RecycleBinSettingTab extends obsidian.PluginSettingTab {
 
         // Show metadata
         new obsidian.Setting(settingsContainer)
-            .setName('Show file metadata')
-            .setDesc('Display file size and deletion date in the list')
+            .setName(t('showMetadata'))
+            .setDesc(t('showMetadataDesc'))
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.showMetadata)
                 .setDisabled(!isPluginEnabled)
@@ -1970,8 +1970,8 @@ class RecycleBinSettingTab extends obsidian.PluginSettingTab {
 
         // Show delete button
         new obsidian.Setting(settingsContainer)
-            .setName('Show per-item delete button')
-            .setDesc('Show a delete button on each item to permanently delete individual files')
+            .setName(t('showDeleteButton'))
+            .setDesc(t('showDeleteButtonDesc'))
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.showDeleteButton)
                 .setDisabled(!isPluginEnabled)
